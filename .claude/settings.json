@@ -1,0 +1,36 @@
+{
+  "projectName": "{YOUR_PROJECT_NAME}",
+  "projectRoot": "{/path/to/your/project}",
+  "worktreeRoot": "{/path/to/worktrees}",
+  "agents": {
+    "backend": {
+      "enabled": true,
+      "worktreePath": "{/path/to/worktrees/backend-agent}"
+    },
+    "frontend": {
+      "enabled": true,
+      "worktreePath": "{/path/to/worktrees/frontend-agent}"
+    },
+    "testing": {
+      "enabled": true,
+      "worktreePath": "{/path/to/worktrees/testing-agent}"
+    },
+    "database": {
+      "enabled": false,
+      "worktreePath": "{/path/to/worktrees/database-agent}"
+    },
+    "devops": {
+      "enabled": false,
+      "worktreePath": "{/path/to/worktrees/devops-agent}"
+    }
+  },
+  "issueTracking": {
+    "platform": "{github|gitlab|jira}",
+    "repository": "{owner/repo}"
+  },
+  "validation": {
+    "autoMerge": false,
+    "requireD009": true,
+    "requireD009b": true
+  }
+}
