@@ -1,8 +1,10 @@
-# Quality Gates - {PROJECT_NAME}
+# Quality Gates - Tech Interview System
 
 **Purpose**: Mandatory checkpoints all agents must pass before committing, merging, and completing work.
 
 **Scope**: Applies to ALL agents (Backend, Frontend, Testing, Database, DevOps, Docs, Orchestrator)
+
+**Tech Stack**: Java/Spring (backend) + TypeScript/React (frontend)
 
 ---
 
@@ -11,9 +13,10 @@
 ### Tool Verification
 - [ ] Required tools installed and accessible:
   ```bash
-  {VALIDATION_COMMAND_1}  # Example: python3 --version
-  {VALIDATION_COMMAND_2}  # Example: node --version
-  {VALIDATION_COMMAND_3}  # Example: mvn --version
+  java -version    # Java 17+
+  mvn --version    # Maven 3.8+
+  node --version   # Node 18+
+  npm --version    # npm 9+
   ```
 
 ### Workspace Validation
@@ -24,8 +27,8 @@
 
 ### Documentation Access
 - [ ] Can access quality gates: `ls ../../docs/00-active/quality-gates.md`
-- [ ] Can access cognitive framework: `ls {PATH_TO_COGNITIVE_FRAMEWORK}`
-- [ ] Can access project docs: `ls {PROJECT_DOCS_PATH}`
+- [ ] Can access cognitive framework: `ls ../cognitive-framework/`
+- [ ] Can access project docs: `ls ../../docs/00-active/`
 
 **If ANY pre-flight check fails: STOP and report error before starting work**
 
@@ -43,7 +46,7 @@ Prevent committing:
 
 **Validation command**:
 ```bash
-git status --porcelain | grep -E "{BINARY_FILE_PATTERN}"  # Should return empty
+git status --porcelain | grep -E "\\.class$|\\.jar$|node_modules/|target/"  # Should return empty
 ```
 
 ### Documentation Sync
@@ -54,7 +57,7 @@ git status --porcelain | grep -E "{BINARY_FILE_PATTERN}"  # Should return empty
 **Validation command**:
 ```bash
 # Check for broken README references (manual review)
-grep -r "{YOUR_DELIVERABLE_PATTERN}" {PROJECT_DOCS_PATH}
+grep -r "backend/\|frontend/" docs/00-active/
 ```
 
 ---
@@ -64,25 +67,31 @@ grep -r "{YOUR_DELIVERABLE_PATTERN}" {PROJECT_DOCS_PATH}
 ### Build Verification
 - [ ] Build succeeds (or document why skipped):
   ```bash
-  {BUILD_COMMAND}  # Example: mvn clean install
-  {BUILD_COMMAND}  # Example: npm run build
-  {BUILD_COMMAND}  # Example: make build
+  # Backend (Java/Spring)
+  mvn clean install
+
+  # Frontend (TypeScript/React)
+  npm run build
   ```
 
 ### Test Verification
 - [ ] Tests pass (or document why skipped):
   ```bash
-  {TEST_COMMAND}  # Example: mvn test
-  {TEST_COMMAND}  # Example: npm test
-  {TEST_COMMAND}  # Example: pytest
+  # Backend (Java/Spring)
+  mvn test
+
+  # Frontend (TypeScript/React)
+  npm test
   ```
 
 ### Code Quality (if applicable)
 - [ ] Linting passes:
   ```bash
-  {LINT_COMMAND}  # Example: eslint src/
-  {LINT_COMMAND}  # Example: mvn checkstyle:check
-  {LINT_COMMAND}  # Example: mypy .
+  # Backend (Java/Spring)
+  mvn checkstyle:check
+
+  # Frontend (TypeScript/React)
+  npm run lint  # or: npx eslint src/
   ```
 
 ### Git Hygiene
@@ -97,9 +106,9 @@ grep -r "{YOUR_DELIVERABLE_PATTERN}" {PROJECT_DOCS_PATH}
 - [ ] Code comments added for complex logic
 
 ### Session Journal (MANDATORY)
-- [ ] **Session journal entry created**: `docs/00-active/journal/{SESSION_FILE}`
+- [ ] **Session journal entry created**: `docs/00-active/journal/YYYY-MM-DD.md` or `session-NN-description.md`
 - [ ] Journal includes: What was accomplished, decisions made, blockers encountered
-- [ ] See D014 protocol: `{PATH_TO_D014_QUICK_REF}`
+- [ ] See D014 protocol: `../cognitive-framework/cognitive-core/quality-collaboration/quick-reference/d014-communication-quick-ref.md`
 
 **If ANY pre-commit check fails: Fix before committing**
 
@@ -113,7 +122,11 @@ grep -r "{YOUR_DELIVERABLE_PATTERN}" {PROJECT_DOCS_PATH}
 - [ ] Branch rebased or merged with latest base
 - [ ] Integration tests pass (if applicable):
   ```bash
-  {INTEGRATION_TEST_COMMAND}
+  # Backend integration tests
+  mvn verify
+
+  # Frontend integration tests (if configured)
+  npm run test:integration
   ```
 
 ### Cross-Reference Check
@@ -147,13 +160,15 @@ grep -r "{YOUR_DELIVERABLE_PATTERN}" {PROJECT_DOCS_PATH}
 - [ ] Integration environment still functional (if applicable)
 - [ ] Database migrations applied (if backend changes merged):
   ```bash
-  {MIGRATION_COMMAND}  # Example: alembic upgrade head
+  # Database migrations (if using Liquibase/Flyway with Spring)
+  mvn liquibase:update
+  # Or if using JPA auto-update, verify application starts successfully
   ```
 
 ### Orchestrator Verification (D009)
-- [ ] Verify commits exist: `git log {BRANCH} --oneline -5`
-- [ ] Verify PR exists and closed: `gh pr view {PR_NUMBER}`
-- [ ] Worktree clean: `cd {WORKTREE} && git status`
+- [ ] Verify commits exist: `git log feature/[agent]-[task] --oneline -5`
+- [ ] Verify PR exists and closed: `gh pr view [PR_NUMBER]`
+- [ ] Worktree clean: `cd ~/projects/tech-interview-system-worktrees/[agent]-agent && git status`
 
 **If post-merge verification fails: Rollback or hotfix immediately**
 
@@ -161,53 +176,41 @@ grep -r "{YOUR_DELIVERABLE_PATTERN}" {PROJECT_DOCS_PATH}
 
 ## Agent-Specific Quality Gates
 
-### Backend Agent
+### Backend Agent (Java/Spring)
 **Pre-commit additions**:
 - [ ] API endpoints tested with manual curl/Postman
 - [ ] Database migrations created (if schema changed)
-- [ ] Backend validation: `{BACKEND_VALIDATION_COMMAND}`
+- [ ] Backend validation: `mvn clean install && mvn test`
 
-**Example**: `mvn clean install && mvn test`
-
-### Frontend Agent
+### Frontend Agent (TypeScript/React)
 **Pre-commit additions**:
 - [ ] UI renders without console errors
 - [ ] Component tests pass
-- [ ] Frontend validation: `{FRONTEND_VALIDATION_COMMAND}`
-
-**Example**: `npm run build && npm test`
+- [ ] Frontend validation: `npm run build && npm test`
 
 ### Testing Agent
 **Pre-commit additions**:
 - [ ] New tests execute successfully
 - [ ] Coverage maintained or improved
-- [ ] Testing validation: `{TESTING_VALIDATION_COMMAND}`
-
-**Example**: `pytest --cov=. --cov-report=term`
+- [ ] Testing validation: `mvn test && npm test` (both backend and frontend tests)
 
 ### Database Agent
 **Pre-commit additions**:
-- [ ] Migrations reversible (test downgrade/upgrade)
+- [ ] Migrations reversible (test downgrade/upgrade if using Liquibase/Flyway)
 - [ ] Schema changes documented
-- [ ] Database validation: `{DATABASE_VALIDATION_COMMAND}`
-
-**Example**: `alembic upgrade head && alembic current`
+- [ ] Database validation: `mvn liquibase:status` (or verify JPA schema generation)
 
 ### DevOps Agent
 **Pre-commit additions**:
 - [ ] Docker builds successfully
 - [ ] CI/CD pipeline syntax valid
-- [ ] DevOps validation: `{DEVOPS_VALIDATION_COMMAND}`
-
-**Example**: `docker-compose build && docker-compose config`
+- [ ] DevOps validation: `docker-compose build && docker-compose config`
 
 ### Docs Agent
 **Pre-commit additions**:
 - [ ] Markdown linting passes (if configured)
 - [ ] Links validated (no broken references)
-- [ ] Docs validation: `{DOCS_VALIDATION_COMMAND}`
-
-**Example**: `markdownlint docs/ && markdown-link-check docs/**/*.md`
+- [ ] Docs validation: Manual review + `grep -r "http" docs/` to check links
 
 ---
 
@@ -246,38 +249,25 @@ grep -r "{YOUR_DELIVERABLE_PATTERN}" {PROJECT_DOCS_PATH}
 
 ### Human Responsibility
 - Review quality gates during project setup
-- Customize {PLACEHOLDER} values for your tech stack
 - Enforce gates during code review
-- Update gates as project evolves
+- Update gates as project evolves (add new validation commands as stack grows)
 
 ---
 
-## Tech Stack Customization
+## Tech Stack Summary
 
-**Replace these placeholders** with your project-specific commands:
+**Backend**: Java 17+ / Spring / Maven
+**Frontend**: TypeScript / React / Node 18+ / npm
+**Database**: JPA/Hibernate (with Liquibase or Flyway for migrations)
+**DevOps**: Docker / docker-compose
 
-- `{VALIDATION_COMMAND_1-3}`: Tool version checks
-- `{PATH_TO_COGNITIVE_FRAMEWORK}`: Path to cognitive framework
-- `{PROJECT_DOCS_PATH}`: Path to project documentation
-- `{BINARY_FILE_PATTERN}`: Regex for binary files (e.g., `\\.class$|\\.jar$`)
-- `{BUILD_COMMAND}`: Build command (e.g., `mvn clean install`, `npm run build`)
-- `{TEST_COMMAND}`: Test command (e.g., `pytest`, `npm test`)
-- `{LINT_COMMAND}`: Linting command (e.g., `eslint`, `checkstyle`)
-- `{INTEGRATION_TEST_COMMAND}`: Integration test command
-- `{MIGRATION_COMMAND}`: Database migration command (e.g., `alembic upgrade head`)
-- `{BACKEND_VALIDATION_COMMAND}`: Backend-specific validation
-- `{FRONTEND_VALIDATION_COMMAND}`: Frontend-specific validation
-- `{TESTING_VALIDATION_COMMAND}`: Testing-specific validation
-- `{DATABASE_VALIDATION_COMMAND}`: Database-specific validation
-- `{DEVOPS_VALIDATION_COMMAND}`: DevOps-specific validation
-- `{DOCS_VALIDATION_COMMAND}`: Docs-specific validation
-- `{PATH_TO_D014_QUICK_REF}`: Path to D014 quick reference
-- `{SESSION_FILE}`: Session journal filename pattern
+**All placeholders customized for interview system tech stack**
 
 ---
 
 ## Version
 
-**Created**: {DATE}
-**Last Updated**: {DATE}
+**Created**: 2025-11-14
+**Last Updated**: 2025-11-14
 **Version**: 1.0
+**Tech Stack**: Java/Spring + TypeScript/React
