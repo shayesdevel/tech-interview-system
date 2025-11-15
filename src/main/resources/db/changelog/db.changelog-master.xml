@@ -6,6 +6,6 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
 
     <!-- Include individual changelogs here -->
-    <!-- Example: <include file="db/changelog/db.changelog-001-initial-schema.xml"/> -->
+    <include file="db/changelog/db.changelog-001-initial-schema.xml"/>
 
 </databaseChangeLog>

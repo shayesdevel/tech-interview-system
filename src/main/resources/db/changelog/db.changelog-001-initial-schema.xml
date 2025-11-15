@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <changeSet id="001-create-candidate-table" author="database-agent">
+        <createTable tableName="candidate">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_candidate_id"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_candidate_email"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_number" type="VARCHAR(20)"/>
+            <column name="tech_stack" type="VARCHAR(20)" defaultValue="JAVA">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_candidate_email" tableName="candidate">
+            <column name="email"/>
+        </createIndex>
+        <createIndex indexName="idx_candidate_tech_stack" tableName="candidate">
+            <column name="tech_stack"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="002-create-problem-table" author="database-agent">
+        <createTable tableName="problem">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_problem_id"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_problem_title"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="difficulty" type="VARCHAR(20)" defaultValue="MEDIUM">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="primary_tech_stack" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="solution_approach" type="TEXT"/>
+            <column name="estimated_minutes" type="INT" defaultValue="60">
+                <constraints nullable="false"/>
+            </column>
+            <column name="max_score" type="INT" defaultValue="100">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_problem_difficulty" tableName="problem">
+            <column name="difficulty"/>
+        </createIndex>
+        <createIndex indexName="idx_problem_category" tableName="problem">
+            <column name="category"/>
+        </createIndex>
+        <createIndex indexName="idx_problem_primary_tech_stack" tableName="problem">
+            <column name="primary_tech_stack"/>
+        </createIndex>
+        <createIndex indexName="idx_problem_title" tableName="problem">
+            <column name="title"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="003-create-test-case-table" author="database-agent">
+        <createTable tableName="test_case">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_test_case_id"/>
+            </column>
+            <column name="problem_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_test_case_problem_id"
+                             references="problem(id)" deleteCascade="true"/>
+            </column>
+            <column name="input_description" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expected_output" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="weight_percentage" type="INT" defaultValue="10">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_hidden" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timeout_seconds" type="INT" defaultValue="5">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_test_case_problem_id" tableName="test_case">
+            <column name="problem_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="004-create-submission-table" author="database-agent">
+        <createTable tableName="submission">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_submission_id"/>
+            </column>
+            <column name="candidate_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_submission_candidate_id"
+                             references="candidate(id)" deleteCascade="true"/>
+            </column>
+            <column name="problem_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_submission_problem_id"
+                             references="problem(id)"/>
+            </column>
+            <column name="code_content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="submitted_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="compilation_status" type="VARCHAR(20)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="compilation_error" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_submission_candidate_id" tableName="submission">
+            <column name="candidate_id"/>
+        </createIndex>
+        <createIndex indexName="idx_submission_problem_id" tableName="submission">
+            <column name="problem_id"/>
+        </createIndex>
+        <createIndex indexName="idx_submission_submitted_at" tableName="submission">
+            <column name="submitted_at"/>
+        </createIndex>
+        <createIndex indexName="idx_submission_compilation_status" tableName="submission">
+            <column name="compilation_status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="005-create-interviewer-table" author="database-agent">
+        <createTable tableName="interviewer">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_interviewer_id"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_interviewer_email"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(30)" defaultValue="INTERVIEWER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expertise_areas" type="VARCHAR(500)"/>
+            <column name="active" type="BOOLEAN" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_interviewer_email" tableName="interviewer">
+            <column name="email"/>
+        </createIndex>
+        <createIndex indexName="idx_interviewer_active" tableName="interviewer">
+            <column name="active"/>
+        </createIndex>
+        <createIndex indexName="idx_interviewer_role" tableName="interviewer">
+            <column name="role"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="006-create-evaluation-table" author="database-agent">
+        <createTable tableName="evaluation">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="pk_evaluation_id"/>
+            </column>
+            <column name="submission_id" type="BIGINT">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_evaluation_submission_id"
+                             foreignKeyName="fk_evaluation_submission_id"
+                             references="submission(id)" deleteCascade="true"/>
+            </column>
+            <column name="interviewer_id" type="BIGINT">
+                <constraints foreignKeyName="fk_evaluation_interviewer_id"
+                             references="interviewer(id)" deleteSetNull="true"/>
+            </column>
+            <column name="test_pass_count" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_test_cases" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="execution_score" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code_quality_score" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="overall_score" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="feedback" type="TEXT"/>
+            <column name="status" type="VARCHAR(20)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="evaluated_at" type="TIMESTAMP"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_evaluation_submission_id" tableName="evaluation">
+            <column name="submission_id"/>
+        </createIndex>
+        <createIndex indexName="idx_evaluation_interviewer_id" tableName="evaluation">
+            <column name="interviewer_id"/>
+        </createIndex>
+        <createIndex indexName="idx_evaluation_status" tableName="evaluation">
+            <column name="status"/>
+        </createIndex>
+        <createIndex indexName="idx_evaluation_evaluated_at" tableName="evaluation">
+            <column name="evaluated_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
